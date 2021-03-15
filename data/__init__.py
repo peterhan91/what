@@ -1,7 +1,7 @@
-import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
+from data.data_mri import ImageDataset, DataTransform
 
 
 def get_dataloader(config):
@@ -13,19 +13,23 @@ def get_dataloader(config):
 
     if config.data_name == 'mnist':
         train_dataset = dset.MNIST(root=data_dir, train=True, transform=trans, download=True)
-        test_dataset = dset.MNIST(root=data_dir, train=False, transform=trans, download=True)
+        val_dataset = dset.MNIST(root=data_dir, train=False, transform=trans, download=True)
     elif config.data_name == 'fashion_mnist':
         train_dataset = dset.FashionMNIST(root=data_dir, train=True, transform=trans, download=True)
-        test_dataset = dset.FashionMNIST(root=data_dir, train=False, transform=trans, download=True)
+        val_dataset = dset.FashionMNIST(root=data_dir, train=False, transform=trans, download=True)
+    elif config.data_name == 'mri':
+        train_dataset = ImageDataset(config, transforms_=DataTransform(), mode='train')
+        val_dataset = ImageDataset(config, transforms_=DataTransform(), mode='val')
+
 
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size,
                               num_workers=config.num_work, shuffle=True)
-    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size,
+    val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size,
                              num_workers=config.num_work, shuffle=False)
 
     print('==>>> total trainning batch number: {}'.format(len(train_loader)))
-    print('==>>> total testing batch number: {}'.format(len(test_loader)))
+    print('==>>> total testing batch number: {}'.format(len(val_loader)))
 
-    data_loader = {'train': train_loader, 'test': test_loader}
+    data_loader = {'train': train_loader, 'val': val_loader}
 
     return data_loader

@@ -1,9 +1,18 @@
 import torch.nn as nn
 import torch.nn.functional as F
-from modules import Encoder, Decoder, DoubleConv
+from model.modules import Encoder, Decoder, DoubleConv
+
+
+def make_model(in_channels=1, out_channels=1, f_maps=64, layer_order='icr',
+                 num_levels=6, conv_padding=1, features_out=False, drop_rate=0.2):
+    return Unet2D(in_channels, out_channels, f_maps=f_maps, layer_order=layer_order,
+                 num_levels=num_levels, conv_padding=conv_padding, features_out=features_out, 
+                 drop_rate=drop_rate)
+
 
 def number_of_features_per_level(init_channel_number, num_levels):
     return [init_channel_number * 2 ** k for k in range(num_levels)]
+
 
 class AbstractUNet(nn.Module):
     def __init__(self, in_channels, out_channels, basic_module, f_maps=64, layer_order='icr',

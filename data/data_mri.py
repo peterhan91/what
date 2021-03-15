@@ -8,7 +8,7 @@ import torchvision.transforms as tvtransforms
 from data.fastmri import subsample, transforms
 
 class ImageDataset(Dataset):
-    def __init__(self, opt, root, transforms_=None, mode='train'):
+    def __init__(self, opt, transforms_=None, mode='train'):
         self.opt = opt
         self.transform = tvtransforms.Compose(transforms_)
         self.files = sorted(glob.glob(os.path.join(opt['root'], '%s' % 'singlecoil_'+mode) + '/*.png'))
@@ -18,6 +18,7 @@ class ImageDataset(Dataset):
         seed = self.opt['seed']
 
         img = np.asarray(Image.open(self.files_A[index % len(self.files_A)]))
+        H, W, _ = img.shape
         rnd_h = random.randint(0, max(0, H - GT_size))
         rnd_w = random.randint(0, max(0, W - GT_size))
         img = img[rnd_h:rnd_h + GT_size, rnd_w:rnd_w + GT_size, :]
@@ -54,4 +55,4 @@ class DataTransform:
         target = transforms.to_tensor(np.transpose(target, (2, 0, 1)))  # target shape [1, H, W]
         target = transforms.normalize(target, mean, std, eps=1e-11)
         
-        return img_LF, target, mean, std
+        return image, target, mean, std

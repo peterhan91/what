@@ -15,7 +15,7 @@ class Model(nn.Module):
         self.num_gpu = config.num_gpu
         self.uncertainty = config.uncertainty
         self.n_samples = config.n_samples
-        module = import_module('model.' + config.uncertainty)
+        module = import_module('model.' + 'unet')
         self.model = module.make_model(config).to(config.device)
 
     def forward(self, input):
