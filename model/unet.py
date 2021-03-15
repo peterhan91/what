@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
-from model.modules import Encoder, Decoder, DoubleConv
+from modules import Encoder, Decoder, DoubleConv
 
 def number_of_features_per_level(init_channel_number, num_levels):
     return [init_channel_number * 2 ** k for k in range(num_levels)]
@@ -44,6 +44,7 @@ class AbstractUNet(nn.Module):
         # create decoder path consisting of the Decoder modules. The length of the decoder is equal to `len(f_maps) - 1`
         reversed_f_maps = list(reversed(f_maps))
         decoders_mean = []
+        decoders_var = []
         for i in range(len(reversed_f_maps) - 1):
             # if basic_module == DoubleConv:
             #     in_feature_num = reversed_f_maps[i] + reversed_f_maps[i + 1]
@@ -59,7 +60,6 @@ class AbstractUNet(nn.Module):
             decoders_mean.append(decoder_mean)
         self.decoders_mean = nn.ModuleList(decoders_mean)
         
-        decoders_var = []
         for i in range(len(reversed_f_maps) - 1):
             in_feature_num = reversed_f_maps[i]
             out_feature_num = reversed_f_maps[i + 1]
@@ -103,8 +103,8 @@ class AbstractUNet(nn.Module):
 
 
 class Unet2D(AbstractUNet):
-    def __init__(self, in_channels, out_channels, f_maps=16, layer_order='icr',
-                 num_levels=4, conv_padding=1, features_out=False, drop_rate=0.1, **kwargs):
+    def __init__(self, in_channels, out_channels, f_maps=64, layer_order='icr',
+                 num_levels=4, conv_padding=1, features_out=False, drop_rate=0.2, **kwargs):
         super(Unet2D, self).__init__(in_channels=in_channels, out_channels=out_channels,
                                      en_kernel_type='2d', de_kernel_type='2d',
                                      basic_module=DoubleConv, f_maps=f_maps, layer_order=layer_order,
