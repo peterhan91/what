@@ -3,11 +3,11 @@ import torch.nn.functional as F
 from model.modules import Encoder, Decoder, DoubleConv
 
 
-def make_model(in_channels=1, out_channels=1, f_maps=64, layer_order='icr',
-                 num_levels=6, conv_padding=1, features_out=False, drop_rate=0.2):
-    return Unet2D(in_channels, out_channels, f_maps=f_maps, layer_order=layer_order,
-                 num_levels=num_levels, conv_padding=conv_padding, features_out=features_out, 
-                 drop_rate=drop_rate)
+def make_model(config):
+    return Unet2D(config.in_channels, config.out_channels, config.n_feats, 
+                    layer_order=config.layer_order, num_levels=config.num_levels, 
+                    conv_padding=config.conv_padding, features_out=False, 
+                    drop_rate=config.drop_rate)
 
 
 def number_of_features_per_level(init_channel_number, num_levels):

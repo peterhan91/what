@@ -15,16 +15,22 @@ parser.add_argument("--exp_dir", type=str, default="../WHAT_exp")
 parser.add_argument("--exp_load", type=str, default=None)
 
 # Data
-parser.add_argument("--data_dir", type=str, default="/mnt/sda")
-parser.add_argument("--data_name", type=str, default="fashion_mnist")
+parser.add_argument("--data_dir", type=str, default="../FastMRI/")
+parser.add_argument("--data_name", type=str, default="mri")
 parser.add_argument('--batch_size', type=int, default=32)
 parser.add_argument('--rgb_range', type=int, default=1)
+parser.add_argument('--GT_size', type=int, default=96)
+parser.add_argument('--seed', type=int, default=10)
 
 # Model
-parser.add_argument('--uncertainty', default='normal',
+parser.add_argument('--uncertainty', default='combined',
                     choices=('normal', 'epistemic', 'aleatoric', 'combined'))
 parser.add_argument('--in_channels', type=int, default=1)
-parser.add_argument('--n_feats', type=int, default=32)
+parser.add_argument('--out_channels', type=int, default=1)
+parser.add_argument('--n_feats', type=int, default=64)
+parser.add_argument('--layer_order', type=str, default='icr')
+parser.add_argument('--num_levels', type=int, default=6)
+parser.add_argument('--conv_padding', type=int, default=1)
 parser.add_argument('--var_weight', type=float, default=1.)
 parser.add_argument('--drop_rate', type=float, default=0.2)
 

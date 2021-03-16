@@ -18,8 +18,8 @@ def get_dataloader(config):
         train_dataset = dset.FashionMNIST(root=data_dir, train=True, transform=trans, download=True)
         val_dataset = dset.FashionMNIST(root=data_dir, train=False, transform=trans, download=True)
     elif config.data_name == 'mri':
-        train_dataset = ImageDataset(config, transforms_=DataTransform(), mode='train')
-        val_dataset = ImageDataset(config, transforms_=DataTransform(), mode='val')
+        train_dataset = ImageDataset(config, transforms_=DataTransform(seed=config.seed), mode='train')
+        val_dataset = ImageDataset(config, transforms_=DataTransform(seed=config.seed), mode='val')
 
 
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size,
