@@ -10,14 +10,16 @@ from data.fastmri import subsample, transforms
 class ImageDataset(Dataset):
     def __init__(self, config, transforms_=None, mode='train'):
         self.opt = config
-        self.transform = tvtransforms.Compose(transforms_)
+        self.transform = transforms_
         self.files = sorted(glob.glob(os.path.join(self.opt.data_dir, '%s' % 'singlecoil_'+mode) + '/*.png'))
 
     def __getitem__(self, index):
         GT_size = self.opt.GT_size
 
-        img = np.asarray(Image.open(self.files_A[index % len(self.files_A)]))
+        img = np.asarray(Image.open(self.files[index % len(self.files)]))
         img = img.astype(np.float32) / 255.
+        if np.ndim(img) < 3:
+            img = np.expand_dims(img, -1)
         H, W, _ = img.shape
         rnd_h = random.randint(0, max(0, H - GT_size))
         rnd_w = random.randint(0, max(0, W - GT_size))

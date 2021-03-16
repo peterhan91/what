@@ -36,13 +36,13 @@ class Operator:
 
         for epoch in range(last_epoch, self.epochs):
             for batch_idx, batch_data in enumerate(data_loader['train']):
-                batch_input, batch_label = batch_data
-                batch_input = batch_input.to(self.config.device)
-                batch_label = batch_label.to(self.config.device)
+                # batch_input, batch_label = batch_data
+                batch_input = batch_data['image'].to(self.config.device)
+                batch_label = batch_data['label'].to(self.config.device)
 
                 # forward
                 batch_results = self.model(batch_input)
-                loss = self.criterion(batch_results, batch_input)
+                loss = self.criterion(batch_results, batch_label)
 
                 # backward
                 self.optimizer.zero_grad()
@@ -74,19 +74,19 @@ class Operator:
             # test model & save model
             self.optimizer.schedule()
             self.save(self.ckpt, epoch)
-            self.test(data_loader)
+            self.val(data_loader)
             self.model.train()
 
         self.summary_writer.close()
 
-    def test(self, data_loader):
+    def val(self, data_loader):
         with torch.no_grad():
             self.model.eval()
 
             total_psnr = 0.
             psnrs = []
-            test_batch_num = len(data_loader['test'])
-            for batch_idx, batch_data in enumerate(data_loader['test']):
+            test_batch_num = len(data_loader['val'])
+            for batch_idx, batch_data in enumerate(data_loader['val']):
                 batch_input, batch_label = batch_data
                 batch_input = batch_input.to(self.config.device)
                 batch_label = batch_label.to(self.config.device)
@@ -102,15 +102,15 @@ class Operator:
 
             # use tensorboard
             if self.tensorboard:
-                self.summary_writer.add_scalar('test/psnr',
+                self.summary_writer.add_scalar('val/psnr',
                                                total_psnr, self.ckpt.last_epoch)
-                self.summary_writer.add_images("test/input_img",
+                self.summary_writer.add_images("val/input_img",
                                                batch_input, self.ckpt.last_epoch)
-                self.summary_writer.add_images("test/mean_img",
+                self.summary_writer.add_images("val/mean_img",
                                                torch.clamp(batch_results['mean'], 0., 1.),
                                                self.ckpt.last_epoch)
                 if not self.uncertainty == 'normal':
-                    self.summary_writer.add_images("test/var_img",
+                    self.summary_writer.add_images("val/var_img",
                                                    batch_results['var'],
                                                    self.ckpt.last_epoch)
 
